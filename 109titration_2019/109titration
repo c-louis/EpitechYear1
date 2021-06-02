@@ -1,0 +1,146 @@
+#!/usr/bin/python3
+
+from sys import stderr, argv
+
+class State:
+    ph = 0
+    volume = 0
+    deriv_1 = 0
+    deriv_2 = 0
+
+    def __init__(self, tab):
+        self.volume = tab[0]
+        self.ph = tab[1]
+
+def get_file(path):
+    try:
+        file = open(path, 'r')
+        lines = file.read().splitlines()
+        return lines
+    except OSError as error:
+        print('Error: can\'t read file:"%s"' % path, error.strerror, file=stderr)
+        exit(84)
+
+def get_all_tabs(lines):
+    try:
+        tabs = []
+        for line in lines:
+            tab = [float(x) for x in line.split(';')]
+            tabs.append(tab)
+        for i, tab in enumerate(tabs):
+            if (len(tab) != 2):
+                print('Error: invalid line at line: %d', i, file=stderr)
+                exit(84)
+        return tabs
+    except ValueError as error:
+        print('Error: invalide value type: ', error, file=stderr)
+        exit(84)
+
+def get_sorted_states(tabs):
+    states = []
+    for tab in tabs:
+        state = State(tab)
+        states.append(state)
+    states = sorted(states, key=lambda state: state.volume)
+    return states
+
+def check_states(states):
+    for state in states:
+        if state.volume < 0:
+            print('Error: volume cannot be negative !', file=stderr)
+            exit(84)
+        if state.ph < 0 or state.ph > 14:
+            print('Error: pH data not valid !', file=stderr)
+            exit(84)
+    increasing = True if states[0].ph < states[1].ph else False
+    for state0, state1 in zip(states, states[1:]):
+        if state0.volume == state1.volume:
+            print('Error: duplicate volume !', file=stderr)
+            exit(84)
+        if ((increasing and (state0.ph > state1.ph)) or (not increasing and (state0.ph < state1.ph))):
+            print('Error: pH data invalid !', file=stderr)
+            exit(84)
+
+def get_equivalence(states):
+    increasing = True if states[0].ph < states[1].ph else False
+    deriv_max = max(states, key=lambda state: state.deriv_1)
+    deriv_min = min(states, key=lambda state: state.deriv_1)
+    if (deriv_max == deriv_min):
+        return deriv_max
+    else:
+        if increasing:
+            return deriv_max
+        else:
+            return deriv_min
+
+def derivative(states):
+    print('Derivative:')
+    for left_s, mid_s, right_s in zip(states, states[1:-1], states[2:]):
+        right_v = ((right_s.ph - mid_s.ph) / (right_s.volume - mid_s.volume))
+        left_v = ((mid_s.ph - left_s.ph) / (mid_s.volume - left_s.volume))
+        v_total = right_s.volume - left_s.volume
+        left_weight = ((mid_s.volume - left_s.volume) / v_total)
+        right_weight = ((right_s.volume - mid_s.volume) / v_total)
+        mid_s.deriv_1 = (right_weight * left_v) + (left_weight * right_v)
+        print('%.1f ml -> %.2f' % (mid_s.volume, mid_s.deriv_1))
+    print()
+    print('Equivalence point at %.1f ml' % get_equivalence(states).volume)
+    print()
+
+def second_derivative(states):
+    print('Second derivative:')
+    for left_s, mid_s, right_s in zip(states[1:], states[2:-2], states[3:]):
+        right_v = ((right_s.deriv_1 - mid_s.deriv_1) / (right_s.volume - mid_s.volume))
+        left_v = ((mid_s.deriv_1 - left_s.deriv_1) / (mid_s.volume - left_s.volume))
+        v_total = right_s.volume - left_s.volume
+        left_weight = ((mid_s.volume - left_s.volume) / v_total)
+        right_weight = ((right_s.volume - mid_s.volume) / v_total)
+        mid_s.deriv_2 = (right_weight * left_v) + (left_weight * right_v)
+        print('%.1f ml -> %.2f' % (mid_s.volume, mid_s.deriv_2))
+    print()
+
+def interpolate(val0, val1, time):
+    inter = ((1 - time) * val0) + (time * val1)
+    return inter
+
+def second_derivative_estimated(states):
+    equivalence = get_equivalence(states)
+    index = states.index(equivalence) - 1
+    estimated = []
+    vol = states[index].volume
+    print('Second derivative estimated:')
+    while (round(vol, 1) < states[index + 1].volume):
+        interpolation = interpolate(states[index].deriv_2, states[index + 1].deriv_2, (vol - states[index].volume) / (states[index + 1].volume - states[index].volume))
+        estimated.append((vol, interpolation))
+        print('%.1f ml -> %.2f' % (vol, interpolation))
+        vol += 0.1
+    vol = states[index + 1].volume
+    while (round(vol, 1) < states[index + 2].volume):
+        interpolation = interpolate(states[index + 1].deriv_2, states[index + 2].deriv_2, (vol - states[index + 1].volume) / (states[index + 2].volume - states[index + 1].volume))
+        estimated.append((vol, interpolation))
+        print('%.1f ml -> %.2f' % (vol, interpolation))
+        vol += 0.1
+    print('%.1f ml -> %.2f' % (states[index + 2].volume, states[index + 2].deriv_2))
+    print()
+    equivalence = min(estimated, key=lambda val: abs(val[1]))
+    print('Equivalence point at %.1f ml' % (equivalence[0]))
+
+def main(argc, argv):
+    if argc != 2 or argv[1] == '-h':
+        print('USAGE', file=stderr)
+        print('\t%s file\n' % argv[0], file=stderr)
+        print('DESCRIPTION', file=stderr)
+        print('\tfile\t a csv file  containing "vol;ph" lines', file=stderr)
+        return 0 if argc == 2 else 84
+
+    lines = get_file(argv[1])
+    tabs = get_all_tabs(lines)
+    states = get_sorted_states(tabs)
+    check_states(states)
+    derivative(states)
+    second_derivative(states)
+    second_derivative_estimated(states)
+    return 0
+
+if __name__ == '__main__':
+    exit(main(len(argv), argv))

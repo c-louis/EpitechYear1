@@ -1,0 +1,30 @@
+<div class="ui two item menu">
+    {% if not session.get('user') %}
+        <a class="item" id="login-button">Login</a>
+        <a class="item" id="register-button">register</a>
+    {% else %}
+        <a class="item" id="logout-button">Logout</a>
+        <div class="ui pointing dropdown link item" id="menu-button">
+            <span class="text">My Account</span>
+            <i class="dropdown icon"></i>
+            <div class="menu">
+                <div class="header">
+                    <i class="tags icon"></i>
+                    Account
+                </div>
+                <a class="item" href="/user">
+                    <div class="ui blue empty circular label"></div>
+                    Details
+                </a>
+                <div class="header">
+                    <i class="calendar icon"></i>
+                    Tasks
+                </div>
+                <a class="item" href="/user/task">
+                    <div class="ui yellow empty circular label"></div>
+                    See all tasks
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>

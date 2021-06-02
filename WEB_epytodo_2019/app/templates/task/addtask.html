@@ -1,0 +1,34 @@
+<div class="ui modal" id="addtask-form">
+    <div class="header"> Add new task </div>
+    <div class="content">
+        <form action='/user/task/add' method='post' class='ui form'>
+            <div class="field">
+                <label> Title : </label>
+                <input type='text' name='title'>
+            </div>
+            <div class="field">
+                <div id="begin-calendar" class="ui calendar">
+                <label> Begin : </label>
+                    <div class="ui input left icon">
+                        <i class="calendar icon"></i>
+                        <input type="text" placeholder="Pick up a date" name="begin" autocomplete="off">
+                    </div>        
+                </div>
+            </div>
+            <div class="field">
+                <div id="end-calendar" class="ui calendar">
+                <label> End : </label>
+                    <div class="ui input left icon">
+                        <i class="calendar icon"></i>
+                        <input type="text" placeholder="Pick up a date" name="end" autocomplete="off">
+                    </div>        
+                </div>
+            </div>
+            <div class="field">
+                <label> Status : </label>
+                <input type='text' name='status'>
+            </div>
+            <button class="ui button" type="submit"> Submit </button>
+        </form>
+    </div>
+</div>

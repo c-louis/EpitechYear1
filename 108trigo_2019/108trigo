@@ -1,0 +1,141 @@
+#!/usr/bin/python3
+
+import sys
+from math import *
+from matrix_fun import *
+
+# HELP
+
+def help():
+        print("USAGE.\n"
+              "     /108 trigo fun a0 a1 a2 ...\n\n"
+              "DESCRIPTION\n"
+              "    fun     function to be appllied, among at least \"EXP\", \"COS\", \"SIN\", \"COSH\" and \"SINH\"\n"
+              "    ai      coeficients of the matrix")
+        sys.exit(0)
+
+def get_function(str):
+        fun = ['EXP', 'SIN', 'COS', 'SINH', 'COSH']
+        for i in range(0, len(fun)):
+                if (str == fun[i]):
+                        return (i)
+
+# TRIGO FUNCT
+
+def exposant(matrix):
+        result = [0] * len(matrix)
+        result = matrix_identity(result)
+        result = matrix_add(result, matrix)
+        for i in range(2, 50):
+                result = matrix_add(result, matrix_div_nbr(matrix_pow(matrix, i), factorial(i)))
+        return (result)
+
+
+def cosinus(matrix):
+        result = [0] * len(matrix)
+        result = matrix_identity(result)
+        for i in range(1, 50):
+                if (i % 2 == 0):
+                        result = matrix_add(result, matrix_div_nbr(matrix_pow(matrix, 2 * i), factorial(2 * i)))
+                else:
+                        result = matrix_sub(result, matrix_div_nbr(matrix_pow(matrix, 2 * i), factorial(2 * i)))
+        return (result)
+
+def sinus(matrix):
+        result = [0] * len(matrix)
+        result = matrix_add(result, matrix)
+        for i in range(1, 50):
+                if (i % 2 == 0):
+                        result = matrix_add(result, matrix_div_nbr(matrix_pow(matrix, 2 * i + 1), factorial(2 * i + 1)))
+                else:
+                        result = matrix_sub(result, matrix_div_nbr(matrix_pow(matrix, 2 * i + 1), factorial(2 * i + 1)))
+        return (result)
+
+def sinh(matrix):
+        result = [0] * len(matrix)
+        result = matrix_add(result, matrix)
+        for i in range(1, 50):
+                result = matrix_add(result, matrix_div_nbr(matrix_pow(matrix, 2 * i + 1), factorial(2 * i + 1)))
+        return (result)
+
+def cosh(matrix):
+        result = [0] * len(matrix)
+        result = matrix_identity(result)
+        for i in range(1, 50):
+                result = matrix_add(result, matrix_div_nbr(matrix_pow(matrix, 2 * i), factorial(2 * i)))
+        return (result)
+
+
+# FUNCT UTILS
+
+def print_matrix(matrix):
+        j = 0
+        n = int(sqrt(len(matrix)))
+        for i in range(0, n):
+                for j in range(0, n - 1):
+                        print("%.2f   " % matrix[j + i * n], end="")
+                print("%.2f" % matrix[(j + 1) + i * n])
+
+# ERROR MANAGEMENT
+
+def check_number(ac, av):
+        for i in range(2, ac):
+                try:
+                        av[i] = float(av[i])
+                except:
+                        sys.exit(84)
+        return (0)
+
+def check_fun(str):
+        fun = ['EXP', 'SIN', 'COS', 'SINH', 'COSH']
+        for i in range(0, len(fun)):
+                if (str == fun[i]):
+                        return (0)
+        return (84)
+
+def check_length(ac):
+        base = 4
+        iteration = 5
+        for i in range(0, 20):
+                if ((ac - 2) == base):
+                        return (0)
+                base = base + iteration
+                iteration = iteration + 2
+        return (84)
+
+def error_handle(ac, av):
+        if (check_length(ac) == 84):
+                return (84)
+        elif (check_fun(av[1]) == 84):
+                return (84)
+        elif (check_number(ac, av) == 84):
+                return (84)
+        return (0)
+
+
+def start_trigo(ac, av):
+        fun = [exposant, sinus, cosinus, sinh, cosh]
+        basic = []
+        num_of_funct = get_function(av[1])
+        for i in range(2, ac):
+                basic.append(float(av[i]))
+        basic = fun[num_of_funct](basic)
+        print_matrix(basic)
+
+# MAIN FUNCTION
+
+if __name__ == "__main__":
+        av = sys.argv
+        ac = len(av)
+        if (ac == 2):
+                if (av[1] == "-h"):
+                        help()
+                else:
+                        sys.exit(84)
+        elif (ac != 1):
+                if (error_handle(ac, av) == 84):
+                        sys.exit(84)
+                start_trigo(ac, av)
+                sys.exit(0)
+        else:
+                sys.exit(84)

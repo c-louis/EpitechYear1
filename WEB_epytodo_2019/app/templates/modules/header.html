@@ -1,0 +1,11 @@
+{% if not session.get('user') %}
+<h2 class="ui center aligned icon header">
+    <i class="circular dog icon"></i>
+    Welcome to the EpyTODO a task Management Application !
+  </h2>
+{% else %}
+<h2 class="ui center aligned icon header">
+    <i class="circular cat icon"></i>
+    Hey {{ session['user'] }} feel free to manage your tasks !
+  </h2>
+{% endif %}

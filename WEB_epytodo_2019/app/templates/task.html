@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="ui one item menu">
+        <a class="item ui green button" id="addtask-button">Add task</a>
+    </div>
+
+    {% if tasks %}
+    <div class="ui raised segment">
+        <a class="ui green tag label">in_progess</a>
+        <table class="ui green table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Begin</th>
+                    <th>End</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for task in tasks %}
+                {% if task.status == 'in_progress' %}
+                    <tr>
+                        <td>{{ task.id }}</td>
+                        <td>{{ task.title | truncate(64, true) }}</td>
+                        <td>{{ task.begin }}</td>
+                        <td>{{ task.end }}</td>
+                        <td>
+                            <div class="ui dropdown">
+                                <div class="ui red tertiary button">Modify</div>
+                                <i class="dropdown icon"></i>
+                                <div class="menu">
+                                    <div class="item" id="delete-button" idp="{{ task.id }}"><i class="delete icon"></i>Delete</div>
+                                    <a class="item" href="/user/task/{{ task.id }}"><i class="edit icon"></i>Modify</a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+        <a class="ui orange tag label">not_started</a>
+        <table class="ui orange table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Begin</th>
+                    <th>End</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for task in tasks %}
+                {% if task.status == 'not_started' %}
+                    <tr>
+                        <td>{{ task.id }}</td>
+                        <td>{{ task.title | truncate(64, true) }}</td>
+                        <td>{{ task.begin }}</td>
+                        <td>{{ task.end }}</td>
+                        <td>
+                            <div class="ui dropdown">
+                                <div class="ui red tertiary button">Modify</div>
+                                <i class="dropdown icon"></i>
+                                <div class="menu">
+                                    <div class="item" id="delete-button" idp="{{ task.id }}"><i class="delete icon"></i>Delete</div>
+                                    <a class="item" href="/user/task/{{ task.id }}"><i class="edit icon"></i>Modify</a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+        <a class="ui red tag label">done</a>
+        <table class="ui red table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Begin</th>
+                    <th>End</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for task in tasks %}
+                {% if task.status == 'done' %}
+                    <tr>
+                        <td>{{ task.id }}</td>
+                        <td>{{ task.title | truncate(64, true) }}</td>
+                        <td>{{ task.begin }}</td>
+                        <td>{{ task.end }}</td>
+                        <td>
+                            <div class="ui dropdown">
+                                <div class="ui red tertiary button">Modify</div>
+                                <i class="dropdown icon"></i>
+                                <div class="menu">
+                                    <div class="item" id="delete-button" idp="{{ task.id }}"><i class="delete icon"></i>Delete</div>
+                                    <a class="item" href="/user/task/{{ task.id }}"><i class="edit icon"></i>Modify</a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+    {% include 'task/deltask.html' %}
+    {% include 'task/addtask.html' %}
+    {% include 'task/task.js' %}
+{% endblock %}

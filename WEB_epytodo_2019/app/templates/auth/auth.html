@@ -1,0 +1,9 @@
+{% if not session.get('user') %}
+    {% include 'auth/login.html' ignore missing %}
+    {% include 'auth/register.html' ignore missing %}
+{% else %}
+    {% include 'auth/logout.html' ignore missing %}
+    {% include 'auth/mytask.html' ignore missing %}
+{% endif %}
+
+{% include 'auth/modals.js' %}

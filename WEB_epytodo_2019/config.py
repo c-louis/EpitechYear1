@@ -1,0 +1,7 @@
+#!/bin/python3
+
+DATABASE_NAME = 'epytodo'
+DATABASE_HOST = '127.0.0.1'
+DATABASE_SOCK = ''
+DATABASE_USER = 'root'
+DATABASE_PASS = ''

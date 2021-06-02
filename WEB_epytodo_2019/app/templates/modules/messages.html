@@ -1,0 +1,12 @@
+{% with msg_list = get_flashed_messages() %}
+  {% if msg_list %}
+      {% for message_obj in msg_list %}
+        {% for type, message in message_obj.items() %}
+          <div class="ui {{ type }} message">
+            <i class="close icon"></i>
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endfor %}
+  {% endif %}
+{% endwith %}

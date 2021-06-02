@@ -1,0 +1,8 @@
+*.a
+*.o
+*~
+#*#
+NormEZ
+lib/*.a
+lib/my/*.a
+calc

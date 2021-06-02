@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="ui segments">
+        <div class="ui red segment">
+            <form action='/user/task/{{ task.id }}' method='post' class='ui form'>
+                <div class="field">
+                    <label> Title : </label>
+                    <input type='text' name='title' value="{{ task.title }}">
+                </div>
+                <div class="field">
+                    <div id="begin-calendar" class="ui calendar">
+                    <label> Begin : </label>
+                        <div class="ui input left icon">
+                            <i class="calendar icon"></i>
+                            <input type="text" placeholder="Pick up a date" name="begin" autocomplete="off" value="{{ task.begin }}">
+                        </div>        
+                    </div>
+                </div>
+                <div class="field">
+                    <div id="end-calendar" class="ui calendar">
+                    <label> End : </label>
+                        <div class="ui input left icon">
+                            <i class="calendar icon"></i>
+                            <input type="text" placeholder="Pick up a date" name="end" autocomplete="off" value="{{ task.end }}">
+                        </div>        
+                    </div>
+                </div>
+                <div class="field">
+                    <label> Status : </label>
+                    <input type='text' name='status' value="{{ task.status }}">
+                </div>
+                <button class="ui button" type="submit">Modify</button>
+            </form>
+        </div>
+    </div>
+    {% include 'task/task.js' %}
+{% endblock %}

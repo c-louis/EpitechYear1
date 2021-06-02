@@ -1,0 +1,75 @@
+#!/usr/bin/python3
+
+from sys import stderr, argv
+from math import sin, pi
+
+def print_help():
+    print("USAGE\n\t\t./110borwein n\n")
+    print("DESCRIPTION\n\t\tn\tconstant defining the integral to be computed")
+
+def borwein(n, x):
+    result = 1.0
+    i = 0
+    while i <= n:
+        if (x == 0):
+            return 1
+        result *= (sin(x / (2*i + 1)) / (x / (2*i + 1)))
+        i += 1
+    return (result)
+
+def mid_m(x):
+    result = 0.0
+    h = 5000 / 10000
+    for i in range(0, 10000):
+        result += borwein(x, ((i * h) + 0.5 * h))
+    result /= 2
+    print("Midpoint:")
+    print("I%d = %.10f" % (int(x), result))
+    print("diff = %.10f" % abs(result - (pi / 2)))
+    print()
+
+def tra_m(x):
+    result = 0.0
+    h = 0.5
+    for i in range(1, 10000):
+        result += borwein(x, i * h)
+    result *= 2
+    result += borwein(x, 5000)
+    result += borwein(x, 0)
+    result *= (0.5 / 2)
+    print("Trapezoidal:")
+    print("I%d = %.10f" % (int(x), result))
+    print("diff = %.10f" % (abs(result - (pi / 2))))
+
+def sim_m(x):
+    result = 0.0
+    tmp1 = 0.0
+    tmp2 = 0.0
+    for i in range(1, 10000):
+        tmp1 += borwein(x, i/2)
+    for i in range(0, 10000):
+        tmp2 += borwein(x, (i * 0.5) + (0.5 / 2))
+    result = borwein(x, 5000) + borwein(x, 0) + (2 * tmp1) + (4 * tmp2)
+    result *= (5000 / (6 * 10000))
+    print("\nSimpson:")
+    print("I%d = %.10f" % (int(x), result))
+    print("diff = %.10f" % (abs(result - (pi / 2))))
+
+def main(argc, argv):
+    if len(argv) != 2:
+        print("Invalid number of argument", file=stderr)
+        exit(84)
+    if argv[1] == "-h":
+        print_help()
+        exit(0)
+    if argv[1].isdigit():
+        x = float(argv[1])
+        mid_m(x)
+        tra_m(x)
+        sim_m(x)
+        exit(0)
+    else:
+        exit(84)
+
+if __name__ == '__main__':
+    exit(main(len(argv), argv))
